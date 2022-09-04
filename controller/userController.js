@@ -110,5 +110,40 @@ module.exports.updateUsers = (req, res) => {
         success: true,
         message: 'User update successfully',
     })
+}
 
+
+// update many  users at a time
+module.exports.bulkUpdate = (req, res) => {
+    const updates = req.body
+    const isArray = Array.isArray(updates);
+    if (!isArray) {
+        return res.status(400).send({
+            success: false,
+            message: 'Provide all user as array',
+        })
+    }
+    const users = JSON.parse(fs.readFileSync(__dirname + '/../user.json', "utf8"))
+    let ids = []
+    let updatedData = []
+
+    updates.map(update => {
+        const findData = users.find(user => user.id == update.id)
+        ids.push(update.id)
+        if (!findData) {
+            return res.status(404).send({
+                success: false,
+                message: 'User not found',
+            })
+        }
+        updatedData.push({...findData, ...update})
+    })
+    
+    const otherUsers = users.filter(user => !ids.includes(user.id))
+    const data = [...otherUsers, ...updatedData]
+    fs.writeFileSync(__dirname + '/../user.json', JSON.stringify(data))
+    res.status(200).send({
+        success: true,
+        message: 'Users update successfully',
+    })
 }
