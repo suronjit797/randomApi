@@ -136,9 +136,9 @@ module.exports.bulkUpdate = (req, res) => {
                 message: 'User not found',
             })
         }
-        updatedData.push({...findData, ...update})
+        updatedData.push({ ...findData, ...update })
     })
-    
+
     const otherUsers = users.filter(user => !ids.includes(user.id))
     const data = [...otherUsers, ...updatedData]
     fs.writeFileSync(__dirname + '/../user.json', JSON.stringify(data))
@@ -146,4 +146,38 @@ module.exports.bulkUpdate = (req, res) => {
         success: true,
         message: 'Users update successfully',
     })
+}
+
+
+// remove a user
+module.exports.removeUser = (req, res) => {
+    const { id } = req.params
+    if (!id) {
+        return res.status(404).send({
+            success: false,
+            message: 'User id not found',
+        })
+    }
+    const users = JSON.parse(fs.readFileSync(__dirname + '/../user.json', "utf8"))
+    const findData = users.find(user => user.id == id)
+    if (!findData) {
+        return res.status(404).send({
+            success: false,
+            message: 'User not found',
+        })
+    }
+    const data = users.filter(user => user.id != id)
+    fs.writeFileSync(__dirname + '/../user.json', JSON.stringify(data))
+    console.log(data)
+    if (data) {
+        res.status(200).send({
+            success: true,
+            message: 'User deleted successfully',
+        })
+    } else {
+        return res.status(500).send({
+            success: false,
+            message: 'Internal server errors',
+        })
+    }
 }

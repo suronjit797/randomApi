@@ -8,5 +8,6 @@ router.get('/all', controller.getAllUsers)
 router.post('/save', controller.saveUser)
 router.patch('/update/:id', controller.updateUsers)
 router.patch('/bulk-update', controller.bulkUpdate)
+router.patch('/delete/:id', controller.removeUser)
 
 module.exports = router
