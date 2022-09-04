@@ -23,3 +23,6 @@ app.get('/', (req,res)=>{
 app.listen(PORT, ()=>{
     console.log(`server is online on port ${PORT}`)
 })
+
+
+app.all('*', (req, res)=>res.send('No route found'))
